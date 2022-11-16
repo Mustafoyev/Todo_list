@@ -97,6 +97,7 @@ function App() {
 									{todos.map((item) => (
 										<li className='hero__item' key={item.id}>
 											<div className='hero__item-content'>
+												<span className='item-number'>{item.id}</span>
 												<input
 													className='hero__item-check'
 													type='checkbox'
