@@ -58,7 +58,7 @@
 }
 
 .hero__item {
-	width: 780px;
+	max-width: 780px;
 	margin: 0 auto;
 	margin-bottom: 10px;
 	padding: 8px;
