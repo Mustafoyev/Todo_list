@@ -44,11 +44,13 @@ function App() {
 		let newTodo = [...todos].filter((item) => {
 			if (item.id == id) {
 				item.isComplate = !item.isComplate;
+				item.isComplate
+					? toast.success('Todo Done !!!')
+					: toast.warning('Todo Failed !!!');
 			}
 			return item;
 		});
 		setTodos(newTodo);
-		toast.success('Todo Done !!!');
 	};
 
 	const editTodo = (id, text) => {
