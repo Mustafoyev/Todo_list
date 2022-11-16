@@ -1,10 +1,14 @@
 import './assets/styles/index.css';
 import './App.css';
 import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 	const [value, setValue] = useState('');
-	const [todos, setTodos] = useState([]);
+	const [todos, setTodos] = useState(
+		JSON.parse(localStorage.getItem('todos')) || [],
+	);
 	const [edit, setEdit] = useState(null);
 	const [editValu, setEditValue] = useState('');
 
@@ -14,20 +18,26 @@ function App() {
 
 	const setSubmit = (evt) => {
 		evt.preventDefault();
-		setTodos([
-			...todos,
-			{
-				id: todos.length ? todos[todos.length - 1].id + 1 : 1,
-				text: value,
-				isComplate: false,
-			},
-		]);
+		if (!value == '') {
+			setTodos([
+				...todos,
+				{
+					id: todos.length ? todos[todos.length - 1].id + 1 : 1,
+					text: value,
+					isComplate: false,
+				},
+			]);
+			toast.success('Added Todo !!!');
+		}
 		setValue('');
 	};
+
+	localStorage.setItem('todos', JSON.stringify(todos));
 
 	const delTodo = (id) => {
 		let newTodo = [...todos].filter((item) => item.id != id);
 		setTodos(newTodo);
+		toast.error('Todo Deleted !!!');
 	};
 
 	const checkTodo = (id) => {
@@ -38,6 +48,7 @@ function App() {
 			return item;
 		});
 		setTodos(newTodo);
+		toast.success('Todo Done !!!');
 	};
 
 	const editTodo = (id, text) => {
@@ -54,6 +65,7 @@ function App() {
 		});
 		setTodos(newTodo);
 		setEdit(null);
+		toast.warning('Todo has been changed !!!');
 	};
 
 	return (
@@ -70,6 +82,7 @@ function App() {
 								<input
 									onChange={getInpValue}
 									className='hero__form-input'
+									value={value}
 									type='text'
 									aria-label='enter your text'
 									name='user_text'
@@ -79,52 +92,72 @@ function App() {
 									Send
 								</button>
 							</form>
-
-							<ul className='hero__list'>
-								{todos.map((item) => (
-									<li className='hero__item'>
-										<div className='hero__item-content'>
-											<input
-												className='hero__item-check'
-												type='checkbox'
-												data-id={item.id}
-												onClick={() => checkTodo(item.id)}></input>
-											{edit == item.id ? (
-												<div className='edit-input-wrapper'>
-													<input
-														className='edit-input'
-														value={editValu}
-														onChange={(evt) => setEditValue(evt.target.value)}
-													/>
-												</div>
-											) : (
-												<p className='hero__item-text'>{item.text}</p>
-											)}
-											{edit == item.id ? (
-												<div className='save-btn-wrapper'>
-													<button
-														className='save-btn'
-														onClick={() => saveTodo(item.id)}></button>
-												</div>
-											) : (
-												<div className='hero__item-btns'>
-													<button
-														className='hero__item-edit'
-														data-id={item.id}
-														onClick={() =>
-															editTodo(item.id, item.text)
-														}></button>
-													<button
-														className='hero__item-del'
-														data-id={item.id}
-														onClick={() => delTodo(item.id)}></button>
-												</div>
-											)}
-										</div>
-									</li>
-								))}
-							</ul>
+							{todos.length ? (
+								<ul className='hero__list'>
+									{todos.map((item) => (
+										<li className='hero__item' key={item.id}>
+											<div className='hero__item-content'>
+												<input
+													className='hero__item-check'
+													type='checkbox'
+													data-id={item.id}
+													onClick={() => checkTodo(item.id)}></input>
+												{edit == item.id ? (
+													<div className='edit-input-wrapper'>
+														<input
+															className='edit-input'
+															value={editValu}
+															onChange={(evt) => setEditValue(evt.target.value)}
+														/>
+													</div>
+												) : (
+													<p
+														className={`hero__item-text' ${
+															item.isComplate ? 'check' : ''
+														}`}>
+														{item.text}
+													</p>
+												)}
+												{edit == item.id ? (
+													<div className='save-btn-wrapper'>
+														<button
+															className='save-btn'
+															onClick={() => saveTodo(item.id)}></button>
+													</div>
+												) : (
+													<div className='hero__item-btns'>
+														<button
+															className='hero__item-edit'
+															data-id={item.id}
+															onClick={() =>
+																editTodo(item.id, item.text)
+															}></button>
+														<button
+															className='hero__item-del'
+															data-id={item.id}
+															onClick={() => delTodo(item.id)}></button>
+													</div>
+												)}
+											</div>
+										</li>
+									))}
+								</ul>
+							) : (
+								<h2 className='no-title'>No todos added</h2>
+							)}
 						</div>
+						<ToastContainer
+							position='bottom-right'
+							autoClose={5000}
+							hideProgressBar={false}
+							newestOnTop={false}
+							closeOnClick
+							rtl={false}
+							pauseOnFocusLoss
+							draggable
+							pauseOnHover
+							theme='dark'
+						/>
 					</div>
 				</section>
 			</main>
